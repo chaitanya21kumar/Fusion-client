@@ -12,7 +12,7 @@ import {
   IconExternalLink,
   IconEye,
 } from "@tabler/icons-react";
-import DataTable from "./DataTable";
+import DataTable from "../DataTable";
 
 const priorityColors = {
   Urgent: "red",

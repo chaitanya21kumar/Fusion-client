@@ -26,6 +26,11 @@ import {
   getNotificationsRoute,
 } from "../../routes/dashboardRoutes";
 import ModuleTabs from "../../components/moduleTabs.jsx";
+import {
+  setUnreadCount,
+  decrementUnreadCount,
+  incrementUnreadCount,
+} from "../../redux/moduleslice";
 
 const categories = ["Most Recent", "Tags", "Title"];
 
@@ -36,7 +41,7 @@ function NotificationItem({
   markAsUnread,
   loading,
 }) {
-  const { module } = notification.data;
+  const module = notification.data?.module;
 
   return (
     <Grid.Col span={{ base: 12, md: 6 }} key={notification.id}>
@@ -121,11 +126,23 @@ function Dashboard() {
         const { data } = await axios.get(getNotificationsRoute, {
           headers: { Authorization: `Token ${token}` },
         });
-        const { notifications } = data;
-        const notificationsData = notifications.map((item) => ({
-          ...item,
-          data: JSON.parse(item.data.replace(/'/g, '"')),
-        }));
+        // Robust list extraction (handle array or object with nested list)
+        const notifs = Array.isArray(data) ? data : data.notifications || [];
+
+        const notificationsData = notifs.map((item) => {
+          let extraData = {};
+          if (typeof item.data === "string") {
+            try {
+              extraData = JSON.parse(item.data.replace(/'/g, '"'));
+            } catch (e) {
+              console.warn("Failed to parse notification data:", e);
+              extraData = {};
+            }
+          } else {
+            extraData = item.data || {};
+          }
+          return { ...item, data: extraData };
+        });
 
         setNotificationsList(
           notificationsData.filter(
@@ -137,6 +154,9 @@ function Dashboard() {
             (item) => item.data?.flag === "announcement",
           ),
         );
+        // Update global unread count
+        const totalUnread = notificationsData.filter((n) => n.unread).length;
+        dispatch(setUnreadCount(totalUnread));
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -199,6 +219,8 @@ function Dashboard() {
             notif.id === notifId ? { ...notif, unread: false } : notif,
           ),
         );
+        // Update global count
+        dispatch(decrementUnreadCount());
       }
     } catch (err) {
       console.error("Error marking notification as read:", err);
@@ -227,6 +249,8 @@ function Dashboard() {
             notif.id === notifId ? { ...notif, unread: true } : notif,
           ),
         );
+        // Update global count
+        dispatch(incrementUnreadCount());
       }
     } catch (err) {
       console.error("Error marking notification as unread:", err);
@@ -250,6 +274,14 @@ function Dashboard() {
       );
 
       if (response.status === 200) {
+        // If the deleted notification was unread, decrement global count
+        const isUnread = [...notificationsList, ...announcementsList].find(
+          (n) => n.id === notifId,
+        )?.unread;
+        if (isUnread) {
+          dispatch(decrementUnreadCount());
+        }
+
         setNotificationsList((prev) =>
           prev.filter((notif) => notif.id !== notifId),
         );

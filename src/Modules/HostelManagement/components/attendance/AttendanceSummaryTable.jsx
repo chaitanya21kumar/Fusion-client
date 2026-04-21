@@ -7,7 +7,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Badge, ActionIcon, Group, Tooltip, Text } from "@mantine/core";
 import { IconEye } from "@tabler/icons-react";
-import DataTable from "./DataTable";
+import DataTable from "../DataTable";
 
 export default function AttendanceSummaryTable({
   data,

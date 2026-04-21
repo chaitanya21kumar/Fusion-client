@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Modal, Select, Textarea, Button, Stack, Group } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { createComplaint } from "../api";
+import { createComplaint } from "../../api";
 
 function CreateComplaintModal({
   opened,

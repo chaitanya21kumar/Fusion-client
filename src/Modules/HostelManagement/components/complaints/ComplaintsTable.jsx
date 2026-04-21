@@ -6,7 +6,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Badge } from "@mantine/core";
-import DataTable from "./DataTable";
+import DataTable from "../DataTable";
 
 const typeColors = {
   Ragging: "red",

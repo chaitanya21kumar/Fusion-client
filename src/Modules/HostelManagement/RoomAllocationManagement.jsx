@@ -31,10 +31,10 @@ import {
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useSelector } from "react-redux";
-import RoomCreationForm from "./components/RoomCreationForm";
-import RoomAllocationForm from "./components/RoomAllocationForm";
-import BatchAllocationForm from "./components/BatchAllocationForm";
-import RoomChangeRequestForm from "./components/RoomChangeRequestForm";
+import RoomCreationForm from "./components/room_allocation/RoomCreationForm";
+import RoomAllocationForm from "./components/room_allocation/RoomAllocationForm";
+import BatchAllocationForm from "./components/room_allocation/BatchAllocationForm";
+import RoomChangeRequestForm from "./components/room_allocation/RoomChangeRequestForm";
 import {
   fetchAllActiveBatches,
   fetchHalls,

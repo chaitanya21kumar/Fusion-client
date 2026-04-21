@@ -27,7 +27,9 @@ import {
   Modal,
   Divider,
   Timeline,
-  Paper as MantinePaper,
+  SegmentedControl,
+  Paper,
+  Textarea,
 } from "@mantine/core";
 import {
   IconPlus,
@@ -39,12 +41,19 @@ import {
   IconCheck,
   IconEye,
   IconCalendar,
+  IconX,
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useSelector } from "react-redux";
 import * as XLSX from "xlsx";
-import { fetchFines, fetchFineReport, markFinePaid, imposeFine } from "./api";
-import ImposeFineModal from "./components/ImposeFineModal";
+import {
+  fetchFines,
+  fetchFineReport,
+  markFinePaid,
+  waiveFine,
+  imposeFine,
+} from "./api";
+import ImposeFineModal from "./components/fines/ImposeFineModal";
 
 export default function FineManagement() {
   const [fines, setFines] = useState([]);
@@ -55,6 +64,10 @@ export default function FineManagement() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedFine, setSelectedFine] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [waiveModalOpen, setWaiveModalOpen] = useState(false);
+  const [waiveReason, setWaiveReason] = useState("");
+  const [waivingId, setWaivingId] = useState(null);
 
   const userRole = useSelector((state) => state.user.role);
   const isStudent = userRole === "student";
@@ -65,8 +78,9 @@ export default function FineManagement() {
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
+      const params = selectedStatus !== "all" ? { status: selectedStatus } : {};
       const [finesData, reportData] = await Promise.all([
-        fetchFines(),
+        fetchFines(params),
         !isStudent ? fetchFineReport() : Promise.resolve(null),
       ]);
       setFines(finesData || []);
@@ -80,7 +94,7 @@ export default function FineManagement() {
     } finally {
       setLoading(false);
     }
-  }, [isStudent]);
+  }, [isStudent, selectedStatus]);
 
   useEffect(() => {
     loadData();
@@ -109,6 +123,43 @@ export default function FineManagement() {
         message: "Action failed.",
         color: "red",
       });
+    }
+  };
+
+  const handleWaive = (id) => {
+    setWaivingId(id);
+    setWaiveReason("");
+    setWaiveModalOpen(true);
+  };
+
+  const handleConfirmWaive = async () => {
+    if (!waiveReason || waiveReason.trim().length < 5) {
+      notifications.show({
+        title: "Invalid Input",
+        message: "Justification must be at least 5 characters.",
+        color: "orange",
+      });
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await waiveFine(waivingId, waiveReason);
+      notifications.show({
+        title: "Success",
+        message: "Fine waived successfully.",
+        color: "blue",
+      });
+      setWaiveModalOpen(false);
+      loadData();
+    } catch (err) {
+      notifications.show({
+        title: "Error",
+        message: "Failed to waive fine.",
+        color: "red",
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -197,12 +248,25 @@ export default function FineManagement() {
 
           <Tabs.Panel value="list" pt="md">
             <Stack>
-              <TextInput
-                placeholder="Search by student or ID..."
-                leftSection={<IconSearch size={16} />}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.currentTarget.value)}
-              />
+              <Group justify="space-between">
+                <TextInput
+                  placeholder="Search by student or ID..."
+                  leftSection={<IconSearch size={16} />}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.currentTarget.value)}
+                  style={{ flex: 1 }}
+                />
+                <SegmentedControl
+                  value={selectedStatus}
+                  onChange={setSelectedStatus}
+                  data={[
+                    { label: "All", value: "all" },
+                    { label: "Pending", value: "pending" },
+                    { label: "Paid", value: "paid" },
+                    { label: "Waived", value: "waived" },
+                  ]}
+                />
+              </Group>
               <ScrollArea h={500}>
                 <Table verticalSpacing="sm">
                   <Table.Thead>
@@ -298,6 +362,18 @@ export default function FineManagement() {
                                 </ActionIcon>
                               </Tooltip>
                             )}
+
+                            {isWarden && f.status === "pending" && (
+                              <Tooltip label="Waive Fine">
+                                <ActionIcon
+                                  color="orange"
+                                  variant="light"
+                                  onClick={() => handleWaive(f.id)}
+                                >
+                                  <IconX size={18} />
+                                </ActionIcon>
+                              </Tooltip>
+                            )}
                           </Group>
                         </Table.Td>
                       </Table.Tr>
@@ -364,11 +440,11 @@ export default function FineManagement() {
                 bullet={<IconAlertTriangle size={12} />}
                 title="Reason & Justification"
               >
-                <MantinePaper withBorder p="xs" mt={4} bg="gray.0">
+                <Paper withBorder p="xs" mt={4} bg="gray.0">
                   <Text size="sm" italic>
                     {selectedFine.reason || "No justification provided."}
                   </Text>
-                </MantinePaper>
+                </Paper>
               </Timeline.Item>
 
               {selectedFine.status === "paid" && (
@@ -377,11 +453,39 @@ export default function FineManagement() {
                   title="Payment Resolved"
                 >
                   <Text color="dimmed" size="xs">
-                    {new Date(selectedFine.paid_date).toLocaleString()}
+                    {selectedFine.paid_date
+                      ? new Date(selectedFine.paid_date).toLocaleString()
+                      : "N/A"}
                   </Text>
                   <Text size="sm" mt={4}>
                     Status changed to <Badge color="green">Paid</Badge>
                   </Text>
+                </Timeline.Item>
+              )}
+
+              {selectedFine.status === "waived" && (
+                <Timeline.Item bullet={<IconX size={12} />} title="Fine Waived">
+                  <Text color="dimmed" size="xs">
+                    {selectedFine.updated_at
+                      ? new Date(selectedFine.updated_at).toLocaleString()
+                      : "N/A"}
+                  </Text>
+                  <Stack gap={4} mt={4}>
+                    <Text size="sm">
+                      Waived by:{" "}
+                      <Text span fw={500}>
+                        {selectedFine.waived_by_name || "Warden"}
+                      </Text>
+                    </Text>
+                    <Paper withBorder p="xs" bg="orange.0">
+                      <Text size="xs" fw={700} c="orange.9" tt="uppercase">
+                        Waiver Justification
+                      </Text>
+                      <Text size="sm" italic>
+                        {selectedFine.waive_reason || "No reason provided."}
+                      </Text>
+                    </Paper>
+                  </Stack>
                 </Timeline.Item>
               )}
             </Timeline>
@@ -403,6 +507,45 @@ export default function FineManagement() {
             </Group>
           </Stack>
         )}
+      </Modal>
+
+      <Modal
+        opened={waiveModalOpen}
+        onClose={() => setWaiveModalOpen(false)}
+        title={<Text fw={700}>Waive Student Fine</Text>}
+        radius="md"
+        centered
+      >
+        <Stack>
+          <Text size="sm" c="dimmed">
+            Please provide a justification for waiving this fine. This action is
+            irreversible and will be logged.
+          </Text>
+          <Textarea
+            label="Waiver Justification"
+            placeholder="Reason for waiving..."
+            required
+            minRows={3}
+            value={waiveReason}
+            onChange={(e) => setWaiveReason(e.currentTarget.value)}
+          />
+          <Group justify="flex-end" mt="md">
+            <Button
+              variant="subtle"
+              onClick={() => setWaiveModalOpen(false)}
+              disabled={submitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="orange"
+              onClick={handleConfirmWaive}
+              loading={submitting}
+            >
+              Confirm Waiver
+            </Button>
+          </Group>
+        </Stack>
       </Modal>
     </Stack>
   );

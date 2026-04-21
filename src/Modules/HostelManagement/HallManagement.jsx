@@ -29,11 +29,11 @@ import {
   IconCheck,
   IconX,
 } from "@tabler/icons-react";
-import HostelList from "./components/HostelList";
-import HostelCreateModal from "./components/HostelCreateModal";
-import AssignStaffModal from "./components/AssignStaffModal";
-import StaffAssignmentTable from "./components/StaffAssignmentTable";
-import BatchAllocationModal from "./components/BatchAllocationModal";
+import HostelList from "./components/hall/HostelList";
+import HostelCreateModal from "./components/hall/HostelCreateModal";
+import AssignStaffModal from "./components/hall/AssignStaffModal";
+import StaffAssignmentTable from "./components/hall/StaffAssignmentTable";
+import BatchAllocationModal from "./components/room_allocation/BatchAllocationModal";
 import {
   fetchHostels,
   createHostel,

@@ -1,5 +1,11 @@
-import { useState } from "react";
-import { User, SignOut, Bell, UserSwitch } from "@phosphor-icons/react";
+import { useState, useEffect } from "react";
+import {
+  User,
+  SignOut,
+  Bell,
+  UserSwitch,
+  Article,
+} from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -24,15 +30,91 @@ import classes from "../Modules/Dashboard/Dashboard.module.css";
 import avatarImage from "../assets/avatar.png";
 import { setPfNo } from "../redux/pfNoSlice";
 
-import { logoutRoute, updateRoleRoute } from "../routes/dashboardRoutes";
+import {
+  logoutRoute,
+  updateRoleRoute,
+  getNotificationsRoute,
+  host,
+} from "../routes/dashboardRoutes";
+import { setUnreadCount } from "../redux/moduleslice";
 
 function Header({ opened, toggleSidebar }) {
   const [popoverOpened, setPopoverOpened] = useState(false);
+  const [notifPopoverOpened, setNotifPopoverOpened] = useState(false);
+  const [notificationsData, setNotificationsData] = useState([]);
+  const unreadCount = useSelector((state) => state.module.unreadCount);
   const username = useSelector((state) => state.user.username);
   const roles = useSelector((state) => state.user.roles);
   const role = useSelector((state) => state.user.role);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const fetchNotifications = async () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+    try {
+      const response = await axios.get(getNotificationsRoute, {
+        headers: { Authorization: `Token ${token}` },
+      });
+      // Handle both array and object response patterns
+      const notifs = Array.isArray(response.data)
+        ? response.data
+        : response.data.notifications || [];
+
+      // Parse the 'data' field which often comes as a string representation
+      const parsedNotifs = notifs.map((n) => {
+        let extraData = {};
+        if (typeof n.data === "string") {
+          try {
+            extraData = JSON.parse(n.data.replace(/'/g, '"'));
+          } catch (e) {
+            console.warn("Failed to parse notification data:", e);
+          }
+        } else {
+          extraData = n.data || {};
+        }
+        return { ...n, extraData };
+      });
+
+      setNotificationsData(parsedNotifs.slice(0, 5)); // Show only recent 5 in popover
+      dispatch(setUnreadCount(parsedNotifs.filter((n) => n.unread).length));
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  const handleNotificationClick = async (notif) => {
+    const token = localStorage.getItem("authToken");
+    setNotifPopoverOpened(false);
+
+    // Mark as read if unread
+    if (notif.unread) {
+      try {
+        await axios.post(
+          `${host}/api/notificationread`,
+          { id: notif.id },
+          { headers: { Authorization: `Token ${token}` } },
+        );
+        // Let the poll or dashboard update the count, or dispatch an update here for instant feedback
+        // dispatch(setUnreadCount(Math.max(0, unreadCount - 1)));
+      } catch (err) {
+        console.error("Error marking notification as read:", err);
+      }
+    }
+
+    // Navigate to specific URL if provided
+    if (notif.extraData && notif.extraData.url) {
+      navigate(`/${notif.extraData.url}`);
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60000); // Poll every 1 minute
+    return () => clearInterval(interval);
+  }, []);
   // const queryclient = useQueryClient();
 
   const handleRoleChange = async (newRole) => {
@@ -65,7 +147,7 @@ function Header({ opened, toggleSidebar }) {
       console.log(response.data.message);
       dispatch(setRole(newRole));
       dispatch(setCurrentAccessibleModules());
-      navigate('/dashboard')
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error updating last selected role:", error.response.data);
     }
@@ -141,9 +223,80 @@ function Header({ opened, toggleSidebar }) {
             onChange={handleRoleChange}
             placeholder="Role"
           />
-          <Indicator>
-            <Bell color="orange" size="32px" cursor="pointer" />
-          </Indicator>
+          <Popover
+            opened={notifPopoverOpened}
+            onChange={setNotifPopoverOpened}
+            width={340}
+            position="bottom-end"
+            withArrow
+            shadow="xl"
+          >
+            <Popover.Target>
+              <Indicator
+                label={unreadCount}
+                disabled={unreadCount === 0}
+                color="red"
+                size={20}
+              >
+                <Bell
+                  color="orange"
+                  size="32px"
+                  cursor="pointer"
+                  onClick={() => setNotifPopoverOpened((o) => !o)}
+                />
+              </Indicator>
+            </Popover.Target>
+            <Popover.Dropdown p="xs">
+              <Stack gap="xs">
+                <Flex justify="space-between" align="center">
+                  <Text fw={700}>Notifications</Text>
+                  <Button
+                    variant="subtle"
+                    size="compact-xs"
+                    onClick={() => navigate("/dashboard")}
+                  >
+                    View All
+                  </Button>
+                </Flex>
+                {notificationsData.length > 0 ? (
+                  notificationsData.map((notif) => (
+                    <Box
+                      key={notif.id}
+                      p="xs"
+                      style={{
+                        borderBottom: "1px solid #eee",
+                        cursor: "pointer",
+                        backgroundColor: notif.unread
+                          ? "#fdf8f0"
+                          : "transparent",
+                      }}
+                      onClick={() => handleNotificationClick(notif)}
+                    >
+                      <Group gap="xs" wrap="nowrap">
+                        <Article size={20} color="#ff922b" />
+                        <Stack gap={0}>
+                          <Text
+                            size="xs"
+                            fw={notif.unread ? 600 : 400}
+                            lineClamp={2}
+                          >
+                            {notif.verb}
+                          </Text>
+                          <Text size="10px" c="dimmed">
+                            {new Date(notif.timestamp).toLocaleString()}
+                          </Text>
+                        </Stack>
+                      </Group>
+                    </Box>
+                  ))
+                ) : (
+                  <Text size="sm" c="dimmed" ta="center" py="md">
+                    No new notifications
+                  </Text>
+                )}
+              </Stack>
+            </Popover.Dropdown>
+          </Popover>
           <Popover
             opened={popoverOpened}
             onChange={setPopoverOpened}

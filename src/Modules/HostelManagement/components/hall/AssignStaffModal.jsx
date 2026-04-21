@@ -27,7 +27,7 @@ import {
   IconAlertCircle,
   IconAlertTriangle,
 } from "@tabler/icons-react";
-import { fetchFacultyList, fetchStaffList } from "../api";
+import { fetchFacultyList, fetchStaffList } from "../../api";
 
 export default function AssignStaffModal({
   opened,

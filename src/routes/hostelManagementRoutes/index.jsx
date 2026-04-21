@@ -153,3 +153,18 @@ export const hostelStaffRoute = (id) => `${BASE_URL}/hostels/${id}/staff/`;
 export const hostelBulkBatchAllotRoute = (id) =>
   `${BASE_URL}/hostels/${id}/bulk-batch-allot/`;
 export const hostelBulkVacateRoute = `${BASE_URL}/hostels/bulk-vacate/`;
+
+// ═══════════════════════════════════════════════════════════════
+// SECURITY MANAGEMENT ROUTES (NEW)
+// ═══════════════════════════════════════════════════════════════
+export const securityGuardsRoute = `${BASE_URL}/security/guards/`;
+export const securityGuardDetailRoute = (id) =>
+  `${BASE_URL}/security/guards/${id}/`;
+export const securityShiftsRoute = `${BASE_URL}/security/shifts/`;
+export const securityShiftCreateRoute = `${BASE_URL}/security/shifts/create/`;
+export const securityShiftUpdateRoute = (id) =>
+  `${BASE_URL}/security/shifts/${id}/`;
+export const securityShiftDeleteRoute = (id) =>
+  `${BASE_URL}/security/shifts/${id}/delete/`;
+export const securityStatusRoute = `${BASE_URL}/security/status/`;
+export const securityLogsRoute = `${BASE_URL}/security/logs/`;

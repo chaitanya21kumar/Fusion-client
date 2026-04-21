@@ -32,8 +32,8 @@ import {
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useSelector } from "react-redux";
-import LeavesTable from "./components/LeavesTable";
-import LeaveRequestForm from "./components/LeaveRequestForm";
+import LeavesTable from "./components/leaves/LeavesTable";
+import LeaveRequestForm from "./components/leaves/LeaveRequestForm";
 import {
   fetchLeaves,
   fetchMyLeaves,

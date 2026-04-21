@@ -26,7 +26,7 @@ import {
   fetchGuestRoomPolicy,
   updateGuestRoomPolicy,
   deleteGuestRoomPolicy,
-} from "../api";
+} from "../../api";
 
 export default function GuestRoomPolicyPanel({ hallId }) {
   const [policy, setPolicy] = useState(null);

@@ -21,7 +21,7 @@ import {
   Loader,
 } from "@mantine/core";
 import { IconInfoCircle, IconCheck, IconX } from "@tabler/icons-react";
-import { fetchStudentByRoll } from "../api";
+import { fetchStudentByRoll } from "../../api";
 
 function ImposeFineModal({ opened, onClose, onSubmit, loading }) {
   const [formData, setFormData] = useState({

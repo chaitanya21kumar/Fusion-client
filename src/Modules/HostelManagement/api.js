@@ -87,6 +87,15 @@ import {
   hostelStaffRoute,
   hostelBulkBatchAllotRoute,
   hostelBulkVacateRoute,
+  // Security Management (NEW)
+  securityGuardsRoute,
+  securityGuardDetailRoute,
+  securityShiftsRoute,
+  securityShiftCreateRoute,
+  securityShiftUpdateRoute,
+  securityShiftDeleteRoute,
+  securityStatusRoute,
+  securityLogsRoute,
 } from "../../routes/hostelManagementRoutes";
 
 // ══════════════════════════════════════════════════════════════
@@ -358,8 +367,8 @@ export const rejectRoomChange = async (changeId, data) => {
 // HM-WF-105: FINE MANAGEMENT API CALLS
 // ══════════════════════════════════════════════════════════════
 
-export const fetchFines = async () => {
-  const response = await apiClient.get(finesRoute);
+export const fetchFines = async (params = {}) => {
+  const response = await apiClient.get(finesRoute, { params });
   return response.data;
 };
 
@@ -857,9 +866,99 @@ export const fetchStaffList = async () => {
     const response = await apiClient.get(staffListRoute);
     return response.data;
   } catch (error) {
-    console.error("Failed to fetch staff list:", error);
+    console.error("Failed to sync batch:", error);
     throw error;
   }
+};
+
+// ══════════════════════════════════════════════════════════════
+// SECURITY MANAGEMENT API CALLS
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * Fetch all security guards
+ */
+export const fetchSecurityGuards = async () => {
+  const response = await apiClient.get(securityGuardsRoute);
+  return response.data;
+};
+
+/**
+ * Register a new security guard
+ */
+export const registerSecurityGuard = async (guardData) => {
+  const response = await apiClient.post(securityGuardsRoute, guardData);
+  return response.data;
+};
+
+/**
+ * Update security guard profile
+ */
+export const updateSecurityGuard = async (guardId, guardData) => {
+  const response = await apiClient.patch(
+    securityGuardDetailRoute(guardId),
+    guardData,
+  );
+  return response.data;
+};
+
+/**
+ * Permanently remove a security guard
+ */
+export const deleteSecurityGuard = async (guardId) => {
+  const response = await apiClient.delete(securityGuardDetailRoute(guardId));
+  return response.data;
+};
+
+/**
+ * Fetch guard shifts with optional filtering
+ */
+export const fetchGuardShifts = async (params = {}) => {
+  const response = await apiClient.get(securityShiftsRoute, { params });
+  return response.data;
+};
+
+/**
+ * Create a new guard shift
+ */
+export const createGuardShift = async (shiftData) => {
+  const response = await apiClient.post(securityShiftCreateRoute, shiftData);
+  return response.data;
+};
+
+/**
+ * Update an existing guard shift
+ */
+export const updateGuardShift = async (shiftId, shiftData) => {
+  const response = await apiClient.patch(
+    securityShiftUpdateRoute(shiftId),
+    shiftData,
+  );
+  return response.data;
+};
+
+/**
+ * Delete a guard shift
+ */
+export const deleteGuardShift = async (shiftId) => {
+  const response = await apiClient.delete(securityShiftDeleteRoute(shiftId));
+  return response.data;
+};
+
+/**
+ * Fetch security deployment summary (Dashboard status)
+ */
+export const fetchSecurityStatus = async (params = {}) => {
+  const response = await apiClient.get(securityStatusRoute, { params });
+  return response.data;
+};
+
+/**
+ * Fetch security audit logs
+ */
+export const fetchSecurityLogs = async (params = {}) => {
+  const response = await apiClient.get(securityLogsRoute, { params });
+  return response.data;
 };
 
 /**

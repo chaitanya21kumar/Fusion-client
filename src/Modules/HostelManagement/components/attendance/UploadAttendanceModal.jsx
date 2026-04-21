@@ -21,7 +21,7 @@ import {
   IconAlertCircle,
   IconCheck,
 } from "@tabler/icons-react";
-import { uploadAttendance } from "../api";
+import { uploadAttendance } from "../../api";
 
 export default function UploadAttendanceModal({
   opened,

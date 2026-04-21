@@ -13,7 +13,7 @@ import {
 import { IconLogout, IconAlertCircle } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import PropTypes from "prop-types";
-import { checkOutGuest, fetchGuestRoomPolicy } from "../api";
+import { checkOutGuest, fetchGuestRoomPolicy } from "../../api";
 
 export default function GuestCheckOutModal({
   opened,

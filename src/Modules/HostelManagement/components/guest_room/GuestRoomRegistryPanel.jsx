@@ -26,7 +26,7 @@ import {
   registerGuestRoom,
   deleteGuestRoom,
   fetchAvailableRoomsForGuest,
-} from "../api";
+} from "../../api";
 
 export default function GuestRoomRegistryPanel({ hallId }) {
   const [registry, setRegistry] = useState([]);

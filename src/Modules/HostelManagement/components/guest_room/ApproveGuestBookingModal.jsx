@@ -17,7 +17,7 @@ import {
 } from "@mantine/core";
 import { IconAlertCircle, IconCheck, IconX } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
-import { fetchGuestRoomRegistry, approveGuestBooking } from "../api";
+import { fetchGuestRoomRegistry, approveGuestBooking } from "../../api";
 
 export default function ApproveGuestBookingModal({
   opened,

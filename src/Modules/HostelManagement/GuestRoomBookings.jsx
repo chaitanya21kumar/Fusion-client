@@ -33,13 +33,13 @@ import { notifications } from "@mantine/notifications";
 import { useSelector } from "react-redux";
 
 // Components
-import GuestBookingCard from "./components/GuestBookingCard";
-import GuestRoomBookingForm from "./components/GuestRoomBookingForm";
-import ApproveGuestBookingModal from "./components/ApproveGuestBookingModal";
-import GuestCheckInModal from "./components/GuestCheckInModal";
-import GuestCheckOutModal from "./components/GuestCheckOutModal";
-import GuestRoomRegistryPanel from "./components/GuestRoomRegistryPanel";
-import GuestRoomPolicyPanel from "./components/GuestRoomPolicyPanel";
+import GuestBookingCard from "./components/guest_room/GuestBookingCard";
+import GuestRoomBookingForm from "./components/guest_room/GuestRoomBookingForm";
+import ApproveGuestBookingModal from "./components/guest_room/ApproveGuestBookingModal";
+import GuestCheckInModal from "./components/guest_room/GuestCheckInModal";
+import GuestCheckOutModal from "./components/guest_room/GuestCheckOutModal";
+import GuestRoomRegistryPanel from "./components/guest_room/GuestRoomRegistryPanel";
+import GuestRoomPolicyPanel from "./components/guest_room/GuestRoomPolicyPanel";
 
 // API
 import {

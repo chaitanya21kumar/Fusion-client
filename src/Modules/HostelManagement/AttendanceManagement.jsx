@@ -32,9 +32,9 @@ import {
   IconCalendarUser,
 } from "@tabler/icons-react";
 import PropTypes from "prop-types";
-import AttendanceSummaryTable from "./components/AttendanceSummaryTable";
-import UploadAttendanceModal from "./components/UploadAttendanceModal";
-import AbsenceHistoryModal from "./components/AbsenceHistoryModal";
+import AttendanceSummaryTable from "./components/attendance/AttendanceSummaryTable";
+import UploadAttendanceModal from "./components/attendance/UploadAttendanceModal";
+import AbsenceHistoryModal from "./components/attendance/AbsenceHistoryModal";
 import {
   fetchHalls,
   fetchAttendanceSummary,

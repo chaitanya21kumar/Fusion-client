@@ -7,7 +7,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Badge, ActionIcon, Group, Tooltip, Anchor } from "@mantine/core";
 import { IconCheck, IconX, IconFileText } from "@tabler/icons-react";
-import DataTable from "./DataTable";
+import DataTable from "../DataTable";
 
 const statusColors = {
   pending: "yellow",

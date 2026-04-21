@@ -12,7 +12,7 @@ import {
 import { IconUserCheck, IconArrowRight } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import PropTypes from "prop-types";
-import { checkInGuest } from "../api";
+import { checkInGuest } from "../../api";
 
 export default function GuestCheckInModal({
   opened,

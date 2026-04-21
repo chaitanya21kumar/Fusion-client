@@ -40,7 +40,7 @@ import ApplicationWindowBanner from "./ApplicationWindowBanner";
 import AccommodationRequestForm from "./AccommodationRequestForm";
 import CapacityHeatmap from "./CapacityHeatmap";
 import AllotmentListView from "./AllotmentListView";
-import RoomChangeRequestForm from "../RoomChangeRequestForm";
+import RoomChangeRequestForm from "../room_allocation/RoomChangeRequestForm";
 
 // API
 import * as api from "../../api";

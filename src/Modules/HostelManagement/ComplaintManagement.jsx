@@ -32,9 +32,9 @@ import {
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useSelector } from "react-redux";
-import ComplaintCard from "./components/ComplaintCard";
-import CreateComplaintModal from "./components/CreateComplaintModal";
-import ComplaintDetailDrawer from "./components/ComplaintDetailDrawer";
+import ComplaintCard from "./components/complaints/ComplaintCard";
+import CreateComplaintModal from "./components/complaints/CreateComplaintModal";
+import ComplaintDetailDrawer from "./components/complaints/ComplaintDetailDrawer";
 import {
   fetchComplaints,
   fetchMyComplaints,
@@ -106,7 +106,7 @@ export default function ComplaintManagement() {
     try {
       setSubmitting(true);
       await escalateComplaint(selectedComplaint.id, {
-        escalation_reason: escalationReason,
+        reason: escalationReason,
       });
       notifications.show({
         title: "Success",
@@ -394,11 +394,20 @@ export default function ComplaintManagement() {
                       setSelectedComplaint(c);
                       setResolveModalOpen(true);
                     }}
-                    canStart={complaint.status === "Submitted"}
-                    canEscalate={complaint.status === "InProgress"}
-                    canResolve={["InProgress", "Escalated"].includes(
-                      complaint.status,
-                    )}
+                    canStart={
+                      complaint.status === "Submitted" &&
+                      userRole === "caretaker"
+                    }
+                    canEscalate={
+                      complaint.status === "InProgress" &&
+                      userRole === "caretaker"
+                    }
+                    canResolve={
+                      (userRole === "warden" &&
+                        complaint.status === "Escalated") ||
+                      (userRole === "caretaker" &&
+                        complaint.status === "InProgress")
+                    }
                   />
                 ))
               ) : (

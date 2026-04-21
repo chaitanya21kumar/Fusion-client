@@ -390,7 +390,24 @@ export default function InventoryManagement() {
                   requests={resourceRequests}
                   userRole={userRole}
                   onReview={(id, data) =>
-                    reviewResourceRequest(id, data).then(() => loadData())
+                    reviewResourceRequest(id, data)
+                      .then(() => {
+                        notifications.show({
+                          title: "Request Reviewed",
+                          message: `Request has been ${data.status.toLowerCase()}.`,
+                          color:
+                            data.status === "Approved" ? "green" : "orange",
+                        });
+                        loadData();
+                      })
+                      .catch((err) => {
+                        notifications.show({
+                          title: "Review Failed",
+                          message:
+                            err.response?.data?.detail || "Action failed.",
+                          color: "red",
+                        });
+                      })
                   }
                 />
               </Paper>

@@ -7,7 +7,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Badge, ActionIcon, Group, Tooltip } from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import DataTable from "./DataTable";
+import DataTable from "../DataTable";
 
 const statusColors = {
   Confirmed: "green",

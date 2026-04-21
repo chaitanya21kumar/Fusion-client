@@ -33,9 +33,9 @@ import { notifications } from "@mantine/notifications";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 
-import NoticeCard from "./components/NoticeCard";
-import NoticesTable from "./components/NoticesTable";
-import CreateNoticeModal from "./components/CreateNoticeModal";
+import NoticeCard from "./components/notices/NoticeCard";
+import NoticesTable from "./components/notices/NoticesTable";
+import CreateNoticeModal from "./components/notices/CreateNoticeModal";
 import {
   fetchNotices,
   fetchNoticeHistory,

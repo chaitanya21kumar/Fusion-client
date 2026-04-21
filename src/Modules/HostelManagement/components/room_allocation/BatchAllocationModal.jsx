@@ -19,7 +19,7 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconCheck, IconX } from "@tabler/icons-react";
-import { getActiveBatchYears, bulkBatchAllotHostel } from "../api";
+import { getActiveBatchYears, bulkBatchAllotHostel } from "../../api";
 
 export default function BatchAllocationModal({
   opened,

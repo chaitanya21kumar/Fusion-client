@@ -1,5 +1,7 @@
 import { host } from "../globalRoutes";
 
+export { host };
+
 export const logoutRoute = `${host}/api/auth/logout/`;
 export const updateRoleRoute = `${host}/api/update-role/`;
 export const getNotificationsRoute = `${host}/api/notification/`;
