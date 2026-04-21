@@ -5,27 +5,18 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { Badge, ActionIcon, Group, Tooltip } from "@mantine/core";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { Badge, ActionIcon, Group, Tooltip, Anchor } from "@mantine/core";
+import { IconCheck, IconX, IconFileText } from "@tabler/icons-react";
 import DataTable from "./DataTable";
 
 const statusColors = {
   pending: "yellow",
-  Approved: "green",
-  Rejected: "red",
+  approved: "green",
+  rejected: "red",
+  cancelled: "gray",
 };
 
-const leaveShape = PropTypes.shape({
-  id: PropTypes.number,
-  student_name: PropTypes.string,
-  start_date: PropTypes.string,
-  end_date: PropTypes.string,
-  reason: PropTypes.string,
-  phone_number: PropTypes.string,
-  status: PropTypes.string,
-});
-
-export default function LeavesTable({
+function LeavesTable({
   leaves,
   loading,
   onApprove,
@@ -37,32 +28,39 @@ export default function LeavesTable({
     {
       key: "student_name",
       label: "Student",
-      render: (_, row) => row.student_name || "-",
+      render: (value, row) => value || row.student?.id?.user?.username || "-",
     },
+    { key: "start_date", label: "Start Date" },
+    { key: "end_date", label: "End Date" },
+    { key: "reason", label: "Reason" },
     {
-      key: "start_date",
-      label: "Start Date",
-      render: (_, row) => row.start_date || "-",
-    },
-    {
-      key: "end_date",
-      label: "End Date",
-      render: (_, row) => row.end_date || "-",
-    },
-    { key: "reason", label: "Reason", render: (_, row) => row.reason || "-" },
-    {
-      key: "phone_number",
-      label: "Phone",
-      render: (_, row) => row.phone_number || "-",
+      key: "documents",
+      label: "Docs",
+      render: (value) =>
+        value ? (
+          <Tooltip label="View Documents">
+            <Anchor href={value} target="_blank" underline="always">
+              <IconFileText size={18} />
+            </Anchor>
+          </Tooltip>
+        ) : (
+          "-"
+        ),
     },
     {
       key: "status",
       label: "Status",
-      render: (_, row) => (
-        <Badge color={statusColors[row.status] || "gray"}>
-          {row.status || "-"}
-        </Badge>
-      ),
+      render: (value) => {
+        const normalized = (value || "").toLowerCase();
+        return (
+          <Badge color={statusColors[normalized] || "gray"}>{value}</Badge>
+        );
+      },
+    },
+    {
+      key: "decision_remarks",
+      label: "Remarks",
+      render: (value) => value || "-",
     },
   ];
 
@@ -70,8 +68,9 @@ export default function LeavesTable({
     columns.push({
       key: "actions",
       label: "Actions",
-      render: (_, row) =>
-        row.status === "pending" ? (
+      render: (_, row) => {
+        const isPending = (row.status || "").toLowerCase() === "pending";
+        return isPending ? (
           <Group gap="xs">
             <Tooltip label="Approve">
               <ActionIcon
@@ -92,7 +91,8 @@ export default function LeavesTable({
               </ActionIcon>
             </Tooltip>
           </Group>
-        ) : null,
+        ) : null;
+      },
     });
   }
 
@@ -107,9 +107,20 @@ export default function LeavesTable({
 }
 
 LeavesTable.propTypes = {
-  leaves: PropTypes.arrayOf(leaveShape).isRequired,
+  leaves: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      start_date: PropTypes.string,
+      end_date: PropTypes.string,
+      reason: PropTypes.string,
+      status: PropTypes.string,
+      documents: PropTypes.string,
+    }),
+  ).isRequired,
   loading: PropTypes.bool.isRequired,
   onApprove: PropTypes.func,
   onReject: PropTypes.func,
   showActions: PropTypes.bool,
 };
+
+export default LeavesTable;

@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import {
   Modal,
   TextInput,
@@ -17,7 +18,7 @@ import {
 } from "@mantine/core";
 import { DateInput, TimeInput } from "@mantine/dates";
 
-export default function CreateBookingModal({
+function CreateBookingModal({
   opened,
   onClose,
   onSubmit,
@@ -45,7 +46,6 @@ export default function CreateBookingModal({
     e.preventDefault();
     const submitData = {
       ...formData,
-      hall_id: parseInt(formData.hall_id, 10),
       arrival_date: formData.arrival_date?.toISOString().split("T")[0],
       departure_date: formData.departure_date?.toISOString().split("T")[0],
     };
@@ -203,3 +203,18 @@ export default function CreateBookingModal({
     </Modal>
   );
 }
+
+CreateBookingModal.propTypes = {
+  opened: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  halls: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      hall_name: PropTypes.string.isRequired,
+    }),
+  ),
+};
+
+export default CreateBookingModal;

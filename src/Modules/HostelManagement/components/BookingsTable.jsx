@@ -4,6 +4,7 @@
  */
 
 import React from "react";
+import PropTypes from "prop-types";
 import { Badge, ActionIcon, Group, Tooltip } from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import DataTable from "./DataTable";
@@ -19,7 +20,7 @@ const statusColors = {
   Forward: "indigo",
 };
 
-export default function BookingsTable({
+function BookingsTable({
   bookings,
   loading,
   onApprove,
@@ -83,3 +84,22 @@ export default function BookingsTable({
     />
   );
 }
+
+BookingsTable.propTypes = {
+  bookings: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      guest_name: PropTypes.string.isRequired,
+      guest_phone: PropTypes.string,
+      status: PropTypes.string.isRequired,
+      arrival_date: PropTypes.string,
+      departure_date: PropTypes.string,
+    }),
+  ).isRequired,
+  loading: PropTypes.bool.isRequired,
+  onApprove: PropTypes.func,
+  onReject: PropTypes.func,
+  showActions: PropTypes.bool,
+};
+
+export default BookingsTable;

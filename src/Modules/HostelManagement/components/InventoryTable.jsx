@@ -4,11 +4,12 @@
  */
 
 import React from "react";
+import PropTypes from "prop-types";
 import { ActionIcon, Group, Tooltip } from "@mantine/core";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import DataTable from "./DataTable";
 
-export default function InventoryTable({
+function InventoryTable({
   inventory,
   loading,
   onEdit,
@@ -66,3 +67,20 @@ export default function InventoryTable({
     />
   );
 }
+
+InventoryTable.propTypes = {
+  inventory: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      item_name: PropTypes.string.isRequired,
+      quantity: PropTypes.number,
+      item_type: PropTypes.string,
+    }),
+  ).isRequired,
+  loading: PropTypes.bool.isRequired,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
+  showActions: PropTypes.bool,
+};
+
+export default InventoryTable;

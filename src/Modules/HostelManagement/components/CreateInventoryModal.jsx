@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import {
   Modal,
   TextInput,
@@ -15,7 +16,7 @@ import {
   Group,
 } from "@mantine/core";
 
-export default function CreateInventoryModal({
+function CreateInventoryModal({
   opened,
   onClose,
   onSubmit,
@@ -107,3 +108,18 @@ export default function CreateInventoryModal({
     </Modal>
   );
 }
+
+CreateInventoryModal.propTypes = {
+  opened: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  halls: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      hall_name: PropTypes.string.isRequired,
+    }),
+  ),
+};
+
+export default CreateInventoryModal;

@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import {
   Modal,
   TextInput,
@@ -14,12 +15,7 @@ import {
   Group,
 } from "@mantine/core";
 
-export default function CreateHallModal({
-  opened,
-  onClose,
-  onSubmit,
-  loading,
-}) {
+function CreateHallModal({ opened, onClose, onSubmit, loading }) {
   const [formData, setFormData] = useState({
     hall_id: "",
     hall_name: "",
@@ -85,3 +81,12 @@ export default function CreateHallModal({
     </Modal>
   );
 }
+
+CreateHallModal.propTypes = {
+  opened: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+};
+
+export default CreateHallModal;

@@ -4,6 +4,7 @@
  */
 
 import React from "react";
+import PropTypes from "prop-types";
 import { Badge } from "@mantine/core";
 import DataTable from "./DataTable";
 
@@ -14,7 +15,7 @@ const typeColors = {
   Other: "gray",
 };
 
-export default function ComplaintsTable({ complaints, loading }) {
+function ComplaintsTable({ complaints, loading }) {
   const columns = [
     { key: "id", label: "ID" },
     {
@@ -56,3 +57,18 @@ export default function ComplaintsTable({ complaints, loading }) {
     />
   );
 }
+
+ComplaintsTable.propTypes = {
+  complaints: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      complaint_type: PropTypes.string,
+      description: PropTypes.string,
+      status: PropTypes.string,
+      complaint_date: PropTypes.string,
+    }),
+  ).isRequired,
+  loading: PropTypes.bool.isRequired,
+};
+
+export default ComplaintsTable;

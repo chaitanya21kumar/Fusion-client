@@ -140,7 +140,7 @@ function SidebarContent({ isCollapsed, toggleSidebar }) {
       icon: <ExamIcon size={18} />,
       url: "/examination",
     },
-        {
+    {
       label: "Database",
       id: "database",
       icon: <DatabaseIcon size={18} />,

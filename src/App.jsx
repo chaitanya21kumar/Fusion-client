@@ -1,6 +1,7 @@
 import { createTheme, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+import "@mantine/dates/styles.css";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Notifications } from "@mantine/notifications";
 import { Layout } from "./components/layout";
@@ -91,6 +92,14 @@ export default function App() {
         <Route path="/reset-password" element={<ForgotPassword />} />
         <Route path="/examination/*" element={<Examination />} />
         <Route path="/database/*" element={<Database />} />
+        {/* <Route
+          path="/hostel-management"
+          element={
+            <Layout>
+              <HostelManagementPage />
+            </Layout>
+          }
+        /> */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </MantineProvider>

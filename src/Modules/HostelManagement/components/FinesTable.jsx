@@ -12,62 +12,34 @@ import DataTable from "./DataTable";
 const statusColors = {
   Pending: "yellow",
   Paid: "green",
-  Rejected: "red",
 };
 
-const fineShape = PropTypes.shape({
-  fine_id: PropTypes.number,
-  student_id_entered: PropTypes.string,
-  student_id_display: PropTypes.string,
-  student_name: PropTypes.string,
-  hall_name: PropTypes.string,
-  reason: PropTypes.string,
-  amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  status: PropTypes.string,
-});
-
-export default function FinesTable({
-  fines,
-  loading,
-  onEdit,
-  onDelete,
-  showActions = false,
-}) {
+function FinesTable({ fines, loading, onEdit, onDelete, showActions = false }) {
   const columns = [
-    { key: "fine_id", label: "ID" },
-    {
-      key: "student_id_display",
-      label: "Student ID",
-      render: (_, row) =>
-        row.student_id_entered || row.student_id_display || "-",
-    },
+    { key: "id", label: "ID" },
     {
       key: "student_name",
-      label: "Student Name",
-      render: (_, row) => row.student_name || "-",
+      label: "Student",
+      render: (_, row) => row.student?.id?.user?.username || "-",
     },
     {
       key: "hall_name",
       label: "Hall",
-      render: (_, row) => row.hall_name || "-",
+      render: (_, row) => row.hall?.hall_name || "-",
     },
-    {
-      key: "reason",
-      label: "Fine Reason",
-      render: (_, row) => row.reason || "-",
-    },
+    { key: "fine_type", label: "Fine Type" },
     {
       key: "amount",
       label: "Amount",
-      render: (_, row) => `₹${row.amount || "0"}`,
+      render: (value) => `â‚¹${value}`,
     },
+    { key: "reason", label: "Reason" },
+    { key: "date_issued", label: "Date Issued" },
     {
       key: "status",
       label: "Status",
-      render: (_, row) => (
-        <Badge color={statusColors[row.status] || "gray"}>
-          {row.status || "-"}
-        </Badge>
+      render: (value) => (
+        <Badge color={statusColors[value] || "gray"}>{value}</Badge>
       ),
     },
   ];
@@ -78,7 +50,7 @@ export default function FinesTable({
       label: "Actions",
       render: (_, row) => (
         <Group gap="xs">
-          <Tooltip label="Edit">
+          <Tooltip label="Edit Fine">
             <ActionIcon
               variant="light"
               color="blue"
@@ -87,7 +59,7 @@ export default function FinesTable({
               <IconEdit size={16} />
             </ActionIcon>
           </Tooltip>
-          <Tooltip label="Delete">
+          <Tooltip label="Delete Fine">
             <ActionIcon
               variant="light"
               color="red"
@@ -112,9 +84,19 @@ export default function FinesTable({
 }
 
 FinesTable.propTypes = {
-  fines: PropTypes.arrayOf(fineShape).isRequired,
+  fines: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      fine_type: PropTypes.string,
+      amount: PropTypes.number,
+      status: PropTypes.string,
+      date_issued: PropTypes.string,
+    }),
+  ).isRequired,
   loading: PropTypes.bool.isRequired,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
   showActions: PropTypes.bool,
 };
+
+export default FinesTable;
